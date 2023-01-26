@@ -1,0 +1,161 @@
+---
+title: "Geospatial modeling"
+author: "Akihiro Shiroshita, MD, MPH"
+date: "`r Sys.time()`"
+output: 
+    word_document:
+      toc: yes
+---
+
+```{r setup, include=FALSE}
+packages = c("here",
+             "devtools",
+             "usethis",
+             "here",
+             "readr",
+             "readxl",
+             "tidyverse",
+             "tidylog",
+             "lubridate",
+             "ggplot2",
+             "RColorBrewer",
+             "ggplotgui",
+             "ggthemes",
+             "gt",
+             "sf",
+             "terra",
+             "spData",
+             "spDataLarge",
+             "ggmap",
+             "osmdata",
+             "tidycensus",
+             "zipcodeR",
+             "raster",
+             "rnaturalearth",
+             "spdep",
+             "units",
+             "rgdal",
+             "viridis",
+             "spatialreg",
+             "car",
+             "CARBayes",
+             "gstat")
+
+#install.packages("spDataLarge", repos = "https://nowosad.r-universe.dev")
+package.check <- lapply(packages, FUN = function(x){
+  if (!require(x, character.only = TRUE)){
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	fig.height = 4,
+	fig.pos = "t",
+	message = FALSE,
+	warning = FALSE,
+	dpi = 350,
+	out.extra = ""
+)
+
+```
+
+# Data import  
+
+```{r}
+# CO data
+co_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^co")
+co_data <- map_df(co_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+
+# NO2 data
+no2_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^no2")
+no2_data <- map_df(no2_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+
+# Ozone data
+ozone_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^ozone")
+ozone_data <- map_df(ozone_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+
+# PB data
+pb_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^pb")
+pb_data <- map_df(pb_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+
+# PM2.5 data
+pm25_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^pm25")
+pm25_data <- map_df(pm25_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+
+# SO2 data
+so2_filelist <- list.files(here("input/epa_daily"),
+                           pattern = "^so2")
+so2_data <- map_df(so2_filelist, ~{
+  path <- file.path(here("input/epa_daily"), .)
+  df <- read_csv(path, locale = locale(encoding = "SHIFT-JIS"))
+})
+```
+
+# EJ justice data   
+
+## Year 2012  
+
+```{r}
+data2012 <- readOGR(here("input/ej_justice/EJSCREEN_2012.gdb.zip"))
+
+data2012_sf <- st_as_sf(data2012)
+
+data2012_sf_tn <- data2012_sf %>% 
+  filter(ST_ABBREV == "TN")
+
+plot(data2012_sf_tn[, "PM25"],
+     axes = FALSE,
+     main = "PM2.5 in TN 2015")
+
+plot(data2012_sf_tn[, "OZONE"],
+     axes = FALSE,
+     main = "Ozone in TN")
+
+plot(data2012_sf_tn[, "DSLPM"],
+     axes = FALSE,
+     main = "Diesel particulate matter in TN")
+```
+## Year 2013  
+
+```{r}
+data2013 <- readOGR(here("input/ej_justice/EJSCREEN_2013.gdb.zip"))
+
+data2013_sf <- st_as_sf(data2013)
+
+data2013_sf_tn <- data2013_sf %>% 
+  filter(ST_ABBREV == "TN")
+
+plot(data2013_sf_tn[, "PM25"],
+     axes = FALSE,
+     main = "PM2.5 in TN 2015")
+
+plot(data2013_sf_tn[, "OZONE"],
+     axes = FALSE,
+     main = "Ozone in TN")
+
+plot(data2013_sf_tn[, "DSLPM"],
+     axes = FALSE,
+     main = "Diesel particulate matter in TN")
+```
